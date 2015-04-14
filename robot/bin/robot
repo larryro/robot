@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php
+echo 'do';
+error_reporting(E_ALL);
+ini_set('display_errors', 'on');
+ini_set('limit_memory','512M');
+ini_set('opcache.enable', false);
+date_default_timezone_set('Asia/Shanghai');
+// require '../allocation/lib/allocation.php';
+if(empty($argv[1]))
+{
+    echo "Usage: allocate {rA}".PHP_EOL;
+    exit;
+}
+$cmd = $argv[1];
+define('Allocation_Root_Dir', realpath(__DIR__."/../")."/"); 
+chdir(Allocation_Root_Dir);
+require_once Allocation_Root_Dir . 'Core/Master.php';
+switch ($cmd) {
+	case 'robotReply':
+		Master::startRobotReply();
+		break;
+	case 'rA':
+		ignore_user_abort(true);
+		// signalIgnore();
+		Master::startRobotAllocation();
+	case 'run':
+		Master::run();
+	case 'loop':
+		ignore_user_abort(true);
+		signalIgnore();
+		loop();
+	case 'kill':
+		forcekill();
+
+	default:
+		# code...
+		break;
+}
+function signalIgnore()
+{
+	pcntl_signal(SIGPIPE, SIG_IGN);
+	pcntl_signal(SIGTTIN, SIG_IGN);
+	pcntl_signal(SIGTTOU, SIG_IGN);
+	pcntl_signal(SIGQUIT, SIG_IGN);
+	pcntl_signal(SIGALRM, SIG_IGN);
+	pcntl_signal(SIGINT, SIG_IGN);
+	pcntl_signal(SIGUSR1, SIG_IGN);
+	pcntl_signal(SIGUSR2, SIG_IGN);
+	pcntl_signal(SIGHUP, SIG_IGN);
+	pcntl_signal_dispatch();
+}
